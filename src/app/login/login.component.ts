@@ -6,6 +6,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [],
 })
 export class LoginComponent implements OnInit {
   loginHtml: SafeHtml | undefined;
@@ -13,17 +15,23 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.http
-      .get('http://localhost:8000/auth', { responseType: 'text' })
+      .get('http://localhost:8000/auth?storeId=asdasd&userType=CUSTOMER', {
+        responseType: 'text',
+      })
       .subscribe((html: string) => {
         this.loginHtml = this.sanitizer.bypassSecurityTrustHtml(html);
         const div = document.createElement('div');
         div.innerHTML = html;
         const mainDiv = document.getElementById('login-ionic-container');
-        mainDiv?.appendChild(div)
+        mainDiv?.appendChild(div);
         const script = document.createElement('script');
         if (div.querySelector('script') != null) {
           console.log(div.querySelector('script') != null);
           const scriptH = div.querySelector('script')?.innerHTML;
+          const scriptSrc = div.querySelector('script')?.src;
+          if (scriptSrc) {
+            script.src = scriptSrc;
+          }
           if (scriptH) {
             script.innerHTML = scriptH;
           }
